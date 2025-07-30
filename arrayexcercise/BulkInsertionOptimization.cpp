@@ -11,9 +11,16 @@ private:
     int capacity;   // current capacity of array
     
     void resize() {
-        // TODO: Implement resize operation
-        // Hint: typically double the capacity when growing
-        
+      int new_capacity = std::max(2* capacity, 1);
+      T* tempA = new T[new_capacity];
+      
+      for (int i = 0; i < n; i++) {
+      tempA[i] = a[i];
+    }
+
+    delete [] a;
+    a = tempA;
+    capacity = new_capacity;
     }
 
 public:
@@ -24,11 +31,37 @@ public:
     ~ArrayStack() {
         delete[] a;
     }
-    
+          // Deep copy constructor
+    ArrayStack(const ArrayStack& other) : n(other.n), capacity(other.capacity) {
+        a = new T[capacity];
+        for (int i = 0; i < n; ++i) {
+            a[i] = other.a[i];
+        }
+    }
+
+    //copy assignment operator for completeness
+    ArrayStack& operator=(const ArrayStack& other) {
+        if (this != &other) {
+            delete[] a;
+            n = other.n;
+            capacity = other.capacity;
+            a = new T[capacity];
+            for (int i = 0; i < n; ++i) {
+                a[i] = other.a[i];
+            }
+        }
+        return *this;
+    }
+
     // Basic operations (you may need these for testing)
     void add(int i, T x) {
-        // TODO: Implement single element insertion
-        // This is the inefficient method we want to avoid using repeatedly
+      if (n == capacity) resize();
+
+      for (int j = n; j > i; j--)
+        a[j] = a[j-1];
+      a[i] = x;
+      n++;
+
         
     }
     
@@ -55,23 +88,32 @@ public:
     // Method 1: Inefficient implementation using repeated add() calls
     template<typename Container>
     void addAll_inefficient(int i, const Container& c) {
-        // TODO: Implement using repeated calls to add(i, x)
-        // This should demonstrate why this approach is slow
-        
-    }
+      for (const auto& x : c) {
+      add (i, x);
+      i++;
+    }      
+  }
     
     // Method 2: Efficient implementation 
     template<typename Container>
     void addAll_efficient(int i, const Container& c) {
-        // TODO: Implement efficient version
-        // Steps:
-        // 1. Calculate how many elements to insert (k = c.size())
-        // 2. Check if resize is needed (if n + k > capacity)
-        // 3. Perform single shift operation to make space
-        // 4. Copy all elements from container c at once
-        // 5. Update n
-        
+      int k = c.size();
+
+      while (n + k > capacity) resize();
+      
+      for (int j = n-1; j > i; --j) {
+      a[j + k] = a[j];
     }
+     
+    int pos = i;
+    for (const auto& x : c) {
+         a[pos++] = x;
+         }
+
+         n+= k;
+
+      
+  }
 };
 
 // Helper function to create test data
