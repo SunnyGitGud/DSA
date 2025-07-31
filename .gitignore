@@ -5,3 +5,4 @@
 *.exe
 apikey.txt
 Templates/
+testtemplates.cpp
